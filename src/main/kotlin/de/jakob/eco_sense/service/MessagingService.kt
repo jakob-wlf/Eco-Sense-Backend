@@ -1,6 +1,7 @@
 package de.jakob.eco_sense.service
 
 import de.jakob.eco_sense.exception.NotFoundException
+import de.jakob.eco_sense.exception.UnauthorizedException
 import de.jakob.eco_sense.model.Conversation
 import de.jakob.eco_sense.model.Message
 import de.jakob.eco_sense.model.User
@@ -34,6 +35,8 @@ class MessagingService(
         val user = userService.getUserEntityBySessionToken(sessionToken)
 
         val participants: List<User> = listOf(user) + startConversationRequest.conversationParticipantIds.map { userService.getUserEntityById(it) }
+        if(participants.contains(user))
+            throw UnauthorizedException("Cannot add yourself as a participant")
         val conversation = Conversation(participants = participants)
 
         conversationRepository.save(conversation)
