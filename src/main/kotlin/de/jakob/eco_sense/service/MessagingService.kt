@@ -34,9 +34,12 @@ class MessagingService(
     fun startConversation(sessionToken: String, startConversationRequest: StartConversationRequest): ConversationResponse {
         val user = userService.getUserEntityBySessionToken(sessionToken)
 
-        val participants: List<User> = listOf(user) + startConversationRequest.conversationParticipantIds.map { userService.getUserEntityById(it) }
-        if(participants.contains(user))
+        val otherParticipants = startConversationRequest.conversationParticipantIds.map { userService.getUserEntityById(it) }
+        if(otherParticipants.contains(user))
             throw UnauthorizedException("Cannot add yourself as a participant")
+
+        val participants: List<User> = listOf(user) + otherParticipants
+
         val conversation = Conversation(participants = participants)
 
         conversationRepository.save(conversation)
