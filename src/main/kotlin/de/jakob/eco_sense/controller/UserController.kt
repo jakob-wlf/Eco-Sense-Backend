@@ -6,6 +6,7 @@ import de.jakob.eco_sense.payload.request.UserUpdateRequest
 import de.jakob.eco_sense.payload.rersponse.SessionResponse
 import de.jakob.eco_sense.payload.rersponse.UserResponse
 import de.jakob.eco_sense.service.UserService
+import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -56,4 +57,10 @@ class UserController(
         val userResponse = userService.getUserProfile(id)
         return ResponseEntity.ok(userResponse)
     }
+
+    @GetMapping("/all")
+    fun getAllUsers(@RequestParam(defaultValue = "0") page: Int, @RequestParam(defaultValue = "10") size: Int): Page<UserResponse> {
+        return userService.getAllUsers(page, size)
+    }
+
 }

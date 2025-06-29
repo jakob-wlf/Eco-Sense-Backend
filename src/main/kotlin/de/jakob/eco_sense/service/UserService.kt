@@ -13,6 +13,9 @@ import de.jakob.eco_sense.payload.rersponse.UserResponse
 import de.jakob.eco_sense.repository.CredentialsRepository
 import de.jakob.eco_sense.repository.SessionRepository
 import de.jakob.eco_sense.repository.UserRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -190,5 +193,13 @@ class UserService(
             .orElseThrow { UnauthorizedException("Invalid session") }
 
         sessionRepository.delete(session)
+    }
+
+    fun getAllUsers(page: Int, size: Int): Page<UserResponse> {
+        val sort = Sort.by(Sort.Order.desc("createdAt"), Sort.Order.desc("id"))
+        val pageable = PageRequest.of(page, size, sort)
+
+        return userRepository.findAll(pageable)
+            .map { UserResponse.fromEntity(it) }
     }
 }
